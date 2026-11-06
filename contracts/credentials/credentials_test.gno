@@ -10,14 +10,6 @@ func testAddress(label string) address {
 	return testutils.TestAddress(label)
 }
 
-func setTestCaller(caller address) {
-	// Gno's own realm filetests set both the origin caller and user realm.
-	// OriginCaller is the transaction signer; NewUserRealm establishes the
-	// user execution realm used when crossing into this contract.
-	testing.SetOriginCaller(caller)
-	testing.SetRealm(testing.NewUserRealm(caller))
-}
-
 func expectPanic(t *testing.T, fn func()) {
 	if revive(fn) == nil {
 		t.Fatal("expected call to panic")
@@ -26,7 +18,7 @@ func expectPanic(t *testing.T, fn func()) {
 
 func TestRequestIssuerCreatesInactiveRequest(cur realm, t *testing.T) {
 	issuerAddress := testAddress("issuer-main")
-	setTestCaller(issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
 
 	RequestIssuer(cross(cur), "Credora Test Institute")
 
@@ -47,7 +39,7 @@ func TestRequestIssuerCreatesInactiveRequest(cur realm, t *testing.T) {
 
 func TestRequestIssuerRejectsEmptyName(cur realm, t *testing.T) {
 	issuerAddress := testAddress("issuer-empty")
-	setTestCaller(issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
 
 	expectPanic(t, func() {
 		RequestIssuer(cross(cur), "")
@@ -60,7 +52,7 @@ func TestRequestIssuerRejectsEmptyName(cur realm, t *testing.T) {
 
 func TestRequestIssuerRejectsDuplicateRequest(cur realm, t *testing.T) {
 	issuerAddress := testAddress("issuer-duplicate")
-	setTestCaller(issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
 	RequestIssuer(cross(cur), "Original Institute")
 
 	expectPanic(t, func() {
@@ -80,10 +72,10 @@ func TestDifferentAddressesCanRequestIssuerStatus(cur realm, t *testing.T) {
 	firstAddress := testAddress("issuer-first")
 	secondAddress := testAddress("issuer-second")
 
-	setTestCaller(firstAddress)
+	testing.SetRealm(testing.NewUserRealm(firstAddress))
 	RequestIssuer(cross(cur), "First Institute")
 
-	setTestCaller(secondAddress)
+	testing.SetRealm(testing.NewUserRealm(secondAddress))
 	RequestIssuer(cross(cur), "Second Institute")
 
 	if GetIssuer(firstAddress).Name != "First Institute" {
@@ -98,10 +90,10 @@ func TestAdminCanApproveIssuer(cur realm, t *testing.T) {
 	admin = testAddress("admin")
 	issuerAddress := testAddress("issuer-approval")
 
-	setTestCaller(issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
 	RequestIssuer(cross(cur), "Approval Test Institute")
 
-	setTestCaller(admin)
+	testing.SetRealm(testing.NewUserRealm(admin))
 	ApproveIssuer(cross(cur), issuerAddress)
 
 	issuer := GetIssuer(issuerAddress)
@@ -117,10 +109,10 @@ func TestNonAdminCannotApproveIssuer(cur realm, t *testing.T) {
 	admin = testAddress("admin")
 	issuerAddress := testAddress("issuer-unauthorized")
 
-	setTestCaller(issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
 	RequestIssuer(cross(cur), "Unauthorized Approval Test")
 
-	setTestCaller(testAddress("attacker"))
+	testing.SetRealm(testing.NewUserRealm(testAddress("attacker")))
 	expectPanic(t, func() {
 		ApproveIssuer(cross(cur), issuerAddress)
 	})
@@ -132,7 +124,7 @@ func TestNonAdminCannotApproveIssuer(cur realm, t *testing.T) {
 
 func TestAdminCannotApproveUnknownIssuer(cur realm, t *testing.T) {
 	admin = testAddress("admin")
-	setTestCaller(admin)
+	testing.SetRealm(testing.NewUserRealm(admin))
 
 	expectPanic(t, func() {
 		ApproveIssuer(cross(cur), testAddress("issuer-unknown"))
@@ -143,10 +135,10 @@ func TestAdminCanDisableIssuer(cur realm, t *testing.T) {
 	admin = testAddress("admin")
 	issuerAddress := testAddress("issuer-disable")
 
-	setTestCaller(issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
 	RequestIssuer(cross(cur), "Disable Test Institute")
 
-	setTestCaller(admin)
+	testing.SetRealm(testing.NewUserRealm(admin))
 	ApproveIssuer(cross(cur), issuerAddress)
 	DisableIssuer(cross(cur), issuerAddress)
 
@@ -162,12 +154,12 @@ func TestNonAdminCannotDisableIssuer(cur realm, t *testing.T) {
 	admin = testAddress("admin")
 	issuerAddress := testAddress("issuer-bad-disable")
 
-	setTestCaller(issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
 	RequestIssuer(cross(cur), "Unauthorized Disable Test")
-	setTestCaller(admin)
+	testing.SetRealm(testing.NewUserRealm(admin))
 	ApproveIssuer(cross(cur), issuerAddress)
 
-	setTestCaller(testAddress("attacker"))
+	testing.SetRealm(testing.NewUserRealm(testAddress("attacker")))
 	expectPanic(t, func() {
 		DisableIssuer(cross(cur), issuerAddress)
 	})

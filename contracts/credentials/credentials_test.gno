@@ -2,6 +2,7 @@ package credentials
 
 import (
 	"testing"
+
 	"gno.land/p/nt/testutils/v0"
 )
 
@@ -167,4 +168,90 @@ func TestNonAdminCannotDisableIssuer(cur realm, t *testing.T) {
 	if !IsApprovedIssuer(issuerAddress) {
 		t.Fatal("unauthorized disable must leave issuer active")
 	}
+}
+
+func TestApprovedIssuerCanIssueCredential(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-can-issue")
+	holderAddress := testAddress("credential-holder")
+	admin = testAddress("admin-can-approve")
+
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RequestIssuer(cross(cur), "Credential Issuer")
+	testing.SetRealm(testing.NewUserRealm(admin))
+	ApproveIssuer(cross(cur), issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+
+	IssueCredential(cross(cur), "CRED-ISSUE-001", holderAddress, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0)
+
+	credential := GetCredential("CRED-ISSUE-001")
+	if credential.Issuer != issuerAddress || credential.Holder != holderAddress {
+		t.Fatal("issued credential must preserve issuer and holder addresses")
+	}
+	if credential.Revoked || !IsCredentialValid("CRED-ISSUE-001") {
+		t.Fatal("newly issued credential should be valid and not revoked")
+	}
+}
+
+func TestUnapprovedIssuerCannotIssueCredential(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-not-approved")
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RequestIssuer(cross(cur), "Pending Institute")
+
+	expectPanic(t, func() {
+		IssueCredential(cross(cur), "CRED-UNAPPROVED", testAddress("holder-unapproved"), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0)
+	})
+}
+
+func TestOnlyIssuingOrganisationCanRevokeCredential(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-revoke-owner")
+	holderAddress := testAddress("holder-revocation")
+	admin = testAddress("admin-revocation")
+
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RequestIssuer(cross(cur), "Revocation Institute")
+	testing.SetRealm(testing.NewUserRealm(admin))
+	ApproveIssuer(cross(cur), issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	IssueCredential(cross(cur), "CRED-REVOKE-001", holderAddress, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", 0)
+
+	testing.SetRealm(testing.NewUserRealm(testAddress("unrelated-revoker")))
+	expectPanic(t, func() { RevokeCredential(cross(cur), "CRED-REVOKE-001") })
+	if !IsCredentialValid("CRED-REVOKE-001") {
+		t.Fatal("unauthorised revocation must not invalidate credential")
+	}
+
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RevokeCredential(cross(cur), "CRED-REVOKE-001")
+	if IsCredentialValid("CRED-REVOKE-001") || !GetCredential("CRED-REVOKE-001").Revoked {
+		t.Fatal("issuer revocation must mark credential invalid")
+	}
+	expectPanic(t, func() { RevokeCredential(cross(cur), "CRED-REVOKE-001") })
+}
+
+func TestIssueCredentialRejectsMalformedDigest(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-bad-digest")
+	admin = testAddress("admin-bad-digest")
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RequestIssuer(cross(cur), "Digest Institute")
+	testing.SetRealm(testing.NewUserRealm(admin))
+	ApproveIssuer(cross(cur), issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+
+	expectPanic(t, func() {
+		IssueCredential(cross(cur), "CRED-BAD-DIGEST", testAddress("holder-bad-digest"), "not-a-sha256-digest", 0)
+	})
+}
+
+func TestIssueCredentialRejectsPastExpiry(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-expired")
+	admin = testAddress("admin-expired")
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RequestIssuer(cross(cur), "Expiry Institute")
+	testing.SetRealm(testing.NewUserRealm(admin))
+	ApproveIssuer(cross(cur), issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+
+	expectPanic(t, func() {
+		IssueCredential(cross(cur), "CRED-PAST-EXPIRY", testAddress("holder-expired"), "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", 1)
+	})
 }

@@ -1,0 +1,37 @@
+name: Gno issuer registration tests
+
+on:
+  pull_request:
+    paths:
+      - "contracts/credentials/**"
+      - ".github/workflows/gno-issuer-tests.yml"
+  push:
+    branches:
+      - "audit/onyx-issuer-registration"
+    paths:
+      - "contracts/credentials/**"
+      - ".github/workflows/gno-issuer-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  issuer-registration:
+    name: Test credentials realm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install pinned Gno toolchain
+        shell: bash
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/gnolang/gno/master/misc/install.sh | sh -s -- --version v1.7.0
+          echo "$HOME/.gno/bin" >> "$GITHUB_PATH"
+
+      - name: Show Gno version
+        run: gno version
+
+      - name: Run credentials realm tests
+        run: gno test ./contracts/credentials

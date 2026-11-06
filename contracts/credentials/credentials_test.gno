@@ -11,6 +11,7 @@ func testAddress(label string) address {
 }
 
 func setTestCaller(caller address) {
+	testing.SetRealm(testing.NewUserRealm(caller))
 	testing.SetOriginCaller(caller)
 }
 

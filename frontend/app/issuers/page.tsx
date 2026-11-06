@@ -26,8 +26,8 @@ export default function IssuersPage() {
       const adena = new AdenaSDK(new AdenaWalletProvider());
       await adena.connectWallet();
       const [account, currentNetwork] = await Promise.all([
-        adena.getAccount() as Promise<WalletAccount>,
-        adena.getNetwork() as Promise<WalletNetwork>
+        adena.getAccount() as unknown as Promise<WalletAccount>,
+        adena.getNetwork() as unknown as Promise<WalletNetwork>
       ]);
       const address = getAddress(account);
       if (!address) throw new Error("Adena connected, but no account address was returned. Please unlock Adena and try again.");

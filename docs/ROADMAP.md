@@ -17,10 +17,10 @@
 
 ## Milestone 2 — dApp foundation
 
-- [ ] Next.js + TypeScript application
+- [x] Next.js + TypeScript UI prototype (holder dashboard, issuer preview, verification preview)
 - [ ] Gno wallet connection
-- [ ] Network and account display
-- [ ] Read-only credential verification page
+- [ ] Live network and account display
+- [ ] Read-only credential verification against deployed realm
 - [ ] Transaction status and error handling
 
 ## Milestone 3 — Holder and issuer experiences

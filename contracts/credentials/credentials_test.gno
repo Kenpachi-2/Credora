@@ -11,8 +11,10 @@ func testAddress(label string) address {
 }
 
 func setTestCaller(caller address) {
-	// Match the Gno realm-test pattern: establish the external user as caller.
-	// Crossing into this realm must then use cross(cur) at the call site.
+	// Gno's own realm filetests set both the origin caller and user realm.
+	// OriginCaller is the transaction signer; NewUserRealm establishes the
+	// user execution realm used when crossing into this contract.
+	testing.SetOriginCaller(caller)
 	testing.SetRealm(testing.NewUserRealm(caller))
 }
 

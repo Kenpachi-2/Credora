@@ -34,4 +34,5 @@ jobs:
         run: gno version
 
       - name: Run credentials realm tests
-        run: gno test ./contracts/credentials
+        working-directory: contracts/credentials
+        run: gno test .

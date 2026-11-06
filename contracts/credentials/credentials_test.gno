@@ -16,7 +16,6 @@ func setTestCaller(caller address) {
 }
 
 func expectPanic(t *testing.T, fn func()) {
-	t.Helper()
 	if revive(fn) == nil {
 		t.Fatal("expected call to panic")
 	}

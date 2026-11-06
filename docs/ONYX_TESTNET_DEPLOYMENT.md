@@ -55,8 +55,8 @@ gnokey query bank/balances/g1vfxnumezmdrtf3l2rncqe7p2ag2cksfcfjc4m0 \
 gnokey maketx addpkg \
   -pkgpath "gno.land/r/g1vfxnumezmdrtf3l2rncqe7p2ag2cksfcfjc4m0/credentials" \
   -pkgdir . \
-  -gas-wanted 20000000 \
-  -gas-fee 20000ugnot \
+  -gas-wanted 5000000 \
+  -gas-fee 5000ugnot \
   -chainid onyx-1 \
   -remote https://rpc.onyx.testnets.gno.land:443 \
   -simulate only \

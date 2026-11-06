@@ -46,7 +46,7 @@ jobs:
 
       - name: Check Gno formatting
         working-directory: contracts/credentials
-        run: gno fmt -diff credentials_test.gno
+        run: gno fmt -diff credentials.gno credentials_test.gno
         env:
           GNOROOT: ${{ github.workspace }}/.gno-src
 

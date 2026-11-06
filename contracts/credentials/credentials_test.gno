@@ -15,7 +15,7 @@ const (
 	testDisableIssuerAddress   = "g1disableissuer"
 	testUnauthorizedDisable    = "g1unauthorizeddisable"
 	testUnknownIssuerAddress   = "g1unknownissuer"
-	testAttackerAddr            = "g1m8q2v6c0x4z8p2s6w0k4n8j2m6q0v4c8x2z6p"
+	testAttackerAddr           = "g1m8q2v6c0x4z8p2s6w0k4n8j2m6q0v4c8x2z6p"
 )
 
 func setTestCaller(caller address) {
@@ -23,7 +23,7 @@ func setTestCaller(caller address) {
 }
 
 func expectPanic(t *testing.T, fn func()) {
-		defer func() {
+	defer func() {
 		if recover() == nil {
 			t.Fatal("expected call to panic")
 		}

@@ -92,7 +92,15 @@ empty-name rejection, duplicate rejection without overwriting the original
 record, independent requests by two callers, admin approval, non-admin
 approval rejection, unknown-issuer rejection, admin disable, and non-admin
 disable rejection. The tests use distinct caller fixtures so shared package
-state cannot make the cases order-dependent.
+state cannot make the cases order-dependent. They use the documented Gno test
+conventions: `testing.SetOriginCaller` to select the simulated signer and
+`cross` to invoke realm crossing functions.
+
+**Execution status:** the tests have been authored but have not yet been run.
+The current execution environment has Go but no `gno` binary, and it cannot
+resolve GitHub to install the pinned toolchain. Do not treat this branch as
+passing until `gno fmt ./...`, `gno lint ./...`, and `gno test ./...` have
+been run with the project's intended Gno version.
 
 The admin-role tests assign the package-level `admin` fixture directly. They
 exercise the authorization guard, but **do not prove that realm initialization

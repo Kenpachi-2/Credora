@@ -33,6 +33,18 @@ docs/                    Architecture, threat model, and roadmap
 | Encrypted document storage | Not started |
 | Independent security review | Not started |
 
+## Frontend
+
+The Next.js + TypeScript UI prototype lives in `frontend/`. It currently uses clearly labelled sample data; wallet connection, live Gno reads/writes, encrypted storage, and real verification are not wired up yet.
+
+```sh
+cd frontend
+npm install
+npm run dev
+```
+
+See [frontend/README.md](frontend/README.md) for configuration and limitations. The frontend follows the current [Next.js App Router installation guidance](https://nextjs.org/docs/app/getting-started/installation). <https://nextjs.org/docs/app/getting-started/installation>
+
 ## Gno development
 
 Install the Gno toolchain by following the [official installation guide](https://docs.gno.land/builders/getting-started/).
@@ -45,7 +57,7 @@ gno lint ./...
 gno test ./...
 ```
 
-The local module path in `gnomod.toml` is a development placeholder. Before deployment, replace it with a package path in the deployer's registered Gno namespace. A GitHub username is not automatically a Gno namespace.
+The current `gnomod.toml` path, `gno.land/r/credora/credentials`, is a placeholder and must match the exact `-pkgpath` used by the on-chain `addpkg` deployment transaction. The simplest first deployment is usually an address-based path such as `gno.land/r/<your-g1-address>/credentials`: every account has its own address namespace, and only that account can deploy under it. A human-readable namespace such as `gno.land/r/credora/...` must be registered on-chain first. Your GitHub username or repository name does not automatically reserve a Gno namespace. See the [official Gno getting-started guide](https://docs.gno.land/builders/getting-started/) and [gnomod.toml reference](https://docs.gno.land/resources/configuring-gno-projects/).
 
 ## Network
 

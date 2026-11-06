@@ -11,11 +11,13 @@ func testAddress(label string) address {
 }
 
 func setTestCaller(cur realm, caller address) {
-	// Model the full call chain: user -> caller realm -> credentials realm.
-	// The code-realm frame is the immediate caller seen by cur.Previous();
-	// OriginCaller remains the external user.
+	// Construct the credentials code realm while the test is still executing
+	// in the credentials realm. NewCodeRealm cannot be created from a user realm.
+	codeRealm := testing.NewCodeRealm(cur.PkgPath())
+
+	// Model the external user entering the credentials realm.
 	testing.SetRealm(testing.NewUserRealm(caller))
-	testing.SetRealm(testing.NewCodeRealm(cur.PkgPath()))
+	testing.SetRealm(codeRealm)
 }
 
 func expectPanic(t *testing.T, fn func()) {
@@ -160,7 +162,7 @@ func TestAdminCanDisableIssuer(cur realm, t *testing.T) {
 
 func TestNonAdminCannotDisableIssuer(cur realm, t *testing.T) {
 	admin = testAddress("admin")
-	issuerAddress := testAddress("issuer-unauthorized-disable")
+	issuerAddress := testAddress("issuer-bad-disable")
 
 	setTestCaller(cur, issuerAddress)
 	RequestIssuer(cur, "Unauthorized Disable Test")

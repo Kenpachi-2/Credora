@@ -1,0 +1,63 @@
+name: Gno issuer registration tests
+
+on:
+  pull_request:
+    paths:
+      - "contracts/credentials/**"
+      - ".github/workflows/gno-issuer-tests.yml"
+  push:
+    branches:
+      - "audit/onyx-issuer-registration"
+    paths:
+      - "contracts/credentials/**"
+      - ".github/workflows/gno-issuer-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  issuer-registration:
+    name: Test credentials realm
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install pinned Gno toolchain
+        shell: bash
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/gnolang/gno/master/misc/install.sh | sh -s -- --version v1.7.0
+          echo "$HOME/.gno/bin" >> "$GITHUB_PATH"
+
+      - name: Check out matching Gno standard libraries
+        uses: actions/checkout@v4
+        with:
+          repository: gnolang/gno
+          ref: v1.7.0
+          path: .gno-src
+
+      - name: Show Gno version and standard-library root
+        run: |
+          gno version
+          test -d "$GNOROOT/gnovm/stdlibs/time"
+        env:
+          GNOROOT: ${{ github.workspace }}/.gno-src
+
+      - name: Check Gno formatting
+        working-directory: contracts/credentials
+        run: gno fmt -diff credentials.gno credentials_test.gno
+        env:
+          GNOROOT: ${{ github.workspace }}/.gno-src
+
+      - name: Run Gno lint
+        working-directory: contracts/credentials
+        run: gno lint .
+        env:
+          GNOROOT: ${{ github.workspace }}/.gno-src
+
+      - name: Run credentials realm tests
+        working-directory: contracts/credentials
+        run: gno test .
+        env:
+          GNOROOT: ${{ github.workspace }}/.gno-src

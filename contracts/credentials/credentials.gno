@@ -37,14 +37,7 @@ func init(cur realm) {
 	admin = cur.Previous().Address()
 }
 
-func requireCurrent(cur realm) {
-	if !cur.IsCurrent() {
-		panic("invalid realm context")
-	}
-}
-
 func requireAdmin(cur realm) {
-	requireCurrent(cur)
 	if cur.Previous().Address() != admin {
 		panic("permission denied: registry admin required")
 	}
@@ -53,7 +46,6 @@ func requireAdmin(cur realm) {
 // RequestIssuer lets an organisation request issuer status. A request is
 // inactive until the registry administrator approves it.
 func RequestIssuer(cur realm, name string) {
-	requireCurrent(cur)
 	caller := cur.Previous().Address()
 	if strings.TrimSpace(name) == "" {
 		panic("issuer name is required")
@@ -88,7 +80,6 @@ func DisableIssuer(cur realm, issuerAddress address) {
 // IssueCredential records a credential digest. The actual document and
 // identifying claims must be delivered and stored off-chain.
 func IssueCredential(cur realm, id string, holder address, documentHash string, expiresAt int64) {
-	requireCurrent(cur)
 	issuerAddress := cur.Previous().Address()
 	issuer := issuers[issuerAddress]
 	if issuer == nil || !issuer.Active {
@@ -124,7 +115,6 @@ func IssueCredential(cur realm, id string, holder address, documentHash string, 
 
 // RevokeCredential can only be called by the organisation that issued it.
 func RevokeCredential(cur realm, id string) {
-	requireCurrent(cur)
 	caller := cur.Previous().Address()
 	credential := credentials[id]
 	if credential == nil {

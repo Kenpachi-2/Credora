@@ -319,7 +319,7 @@ func TestDisabledIssuerCannotIssueCredential(cur realm, t *testing.T) {
 func TestExpiredCredentialIsNotValid(cur realm, t *testing.T) {
 	_ = cur
 	credentials["CRED-EXPIRED-STATUS"] = &Credential{
-		ID: "CRED-EXPIRED-STATUS",
+		ID:        "CRED-EXPIRED-STATUS",
 		ExpiresAt: 1,
 	}
 	if IsCredentialValid("CRED-EXPIRED-STATUS") {

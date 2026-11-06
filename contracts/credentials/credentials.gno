@@ -1,9 +1,6 @@
 package credentials
 
-import (
-	"chain/runtime/unsafe"
-	"time"
-)
+import "time"
 
 // admin is captured from the deployer during one-time realm initialisation.
 var admin address

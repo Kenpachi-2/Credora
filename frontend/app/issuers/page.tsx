@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AdenaSDK } from "@adena-wallet/sdk";
 
 type WalletAccount = { address?: string; account?: { address?: string }; data?: { address?: string }; [key: string]: unknown };
@@ -50,14 +51,14 @@ export default function IssuersPage() {
 
   return (
     <main className="standalone-page">
-      <a className="standalone-brand" href="/"> <span className="brand-mark">c<span>.</span></span> credora</a>
+      <Link className="standalone-brand" href="/"> <span className="brand-mark">c<span>.</span></span> credora</Link>
       <div className="eyebrow">FOR EDUCATION & CERTIFICATION PROVIDERS</div>
       <h1>Become a trusted issuer.</h1>
       <p className="subtitle">A transparent route for organisations to issue verifiable qualifications.</p>
       <section className="feature-panel verify-panel">
         <div className="feature-symbol">▧</div>
         <h2>Issuer registration preview</h2>
-        <p>Connect your Adena wallet to identify the organisation's Gno account. Registration is still a preview; no blockchain transaction is submitted.</p>
+        <p>Connect your Adena wallet to identify the organisation&apos;s Gno account. Registration is still a preview; no blockchain transaction is submitted.</p>
         <div className="wallet-connect-panel">
           <button className="primary-button" type="button" onClick={connectWallet} disabled={connecting}>
             {connecting ? "Connecting…" : connected ? "Reconnect Adena wallet" : "Connect Adena wallet"} <span>→</span>

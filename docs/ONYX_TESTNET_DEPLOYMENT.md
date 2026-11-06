@@ -42,7 +42,7 @@ Do not deploy from a different wallet. Address-based namespaces are controlled b
 
 ## Simulation only — does not publish the realm
 
-The official Gno v1.7.0 CLI documents `-simulate only` as the dry-run mode. Its Onyx guide currently gives 5,000,000 gas wanted and 5,000 ugnot as example starting values; simulation results, not these examples, determine the final transaction parameters.
+The official Gno v1.7.0 CLI documents `-simulate only` as the dry-run mode. The current Onyx guide gives 5,000,000 gas wanted and 5,000 ugnot as example starting values; simulation results, not these examples, determine the final transaction parameters.
 
 Run from the package directory after installing the official Gno toolchain:
 
@@ -63,7 +63,7 @@ gnokey maketx addpkg \
   <YOUR_LOCAL_KEY_NAME>
 ```
 
-Replace `<YOUR_LOCAL_KEY_NAME>` with the local key alias shown by `gnokey list`. This is a local alias, not a secret. The `-simulate only` flag is essential: it estimates the transaction without broadcasting it.
+Replace `<YOUR_LOCAL_KEY_NAME>` with the local key alias shown by `gnokey list` on the machine that holds the wallet key. This is a local alias, not a secret. The `-simulate only` flag is essential: it signs and simulates locally but does not broadcast. The simulation must use the actual wallet that controls this namespace; a different temporary key cannot authorize this address-based package path. The maintainer's wallet key is not present in the build sandbox and must never be uploaded or shared to make this work.
 
 Review the simulation output:
 - Confirm the package path is exactly the target path above.

@@ -11,8 +11,8 @@ func testAddress(label string) address {
 }
 
 func setTestCaller(caller address) {
-	testing.SetOriginCaller(caller)
 	testing.SetRealm(testing.NewUserRealm(caller))
+	testing.SetOriginCaller(caller)
 }
 
 func expectPanic(t *testing.T, fn func()) {

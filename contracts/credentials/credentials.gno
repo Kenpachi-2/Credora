@@ -1,13 +1,8 @@
 package credentials
 
-import (
-	"chain/runtime/unsafe"
-	"time"
-)
+import "time"
 
-// admin is set to the deployer during realm initialisation.
-// The unsafe import is intentionally used only in init; crossing functions
-// authenticate callers through cur.Previous() after checking cur.IsCurrent().
+// admin is captured from the deployer during one-time realm initialisation.
 var admin address
 
 var issuers = map[address]*Issuer{}
@@ -33,8 +28,10 @@ type Credential struct {
 	Revoked      bool
 }
 
-func init() {
-	admin = unsafe.PreviousRealm().Address()
+// Gno provides the deployer as the previous realm during init. Capture only
+// its address; realm handles are ephemeral and must not be persisted.
+func init(cur realm) {
+	admin = cur.Previous().Address()
 }
 
 func requireCurrent(cur realm) {
@@ -61,11 +58,7 @@ func RequestIssuer(cur realm, name string) {
 	if issuers[caller] != nil {
 		panic("issuer request already exists")
 	}
-	issuers[caller] = &Issuer{
-		Address: caller,
-		Name:    name,
-		Active:  false,
-	}
+	issuers[caller] = &Issuer{Address: caller, Name: name, Active: false}
 }
 
 // ApproveIssuer activates an issuer after off-chain due diligence.

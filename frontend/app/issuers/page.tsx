@@ -32,7 +32,8 @@ export default function IssuersPage() {
       const address = getAddress(account);
       if (!address) throw new Error("Adena connected, but no account address was returned. Please unlock Adena and try again.");
       setWallet(address);
-      const networkInfo = currentNetwork.data ?? currentNetwork;\n      setNetwork(networkInfo.chainId ?? networkInfo.chain_id ?? networkInfo.chainName ?? networkInfo.name ?? "Connected network");
+      const networkInfo = currentNetwork.data ?? currentNetwork;
+      setNetwork(networkInfo.chainId ?? networkInfo.chain_id ?? networkInfo.chainName ?? networkInfo.name ?? "Connected network");
       setConnected(true);
       setSubmitted(false);
     } catch (error) {

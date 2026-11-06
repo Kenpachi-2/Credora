@@ -4,6 +4,8 @@ Next.js App Router + TypeScript interface prototype.
 
 ## Run locally
 
+Run the frontend unit tests with `npm test` after installing dependencies.
+
 Requirements: Node.js 20.9 or later.
 
 ```sh

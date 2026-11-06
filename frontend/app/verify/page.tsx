@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 export default function VerifyPage() {
   const [credentialId, setCredentialId] = useState("");
@@ -13,7 +14,7 @@ export default function VerifyPage() {
 
   return (
     <main className="standalone-page">
-      <a className="standalone-brand" href="/"> <span className="brand-mark">c<span>.</span></span> credora</a>
+      <Link className="standalone-brand" href="/"> <span className="brand-mark">c<span>.</span></span> credora</Link>
       <div className="eyebrow">CREDENTIAL AUTHENTICITY</div>
       <h1>Verify a credential.</h1>
       <p className="subtitle">Check a credential reference against the Credora registry.</p>

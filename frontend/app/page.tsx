@@ -189,12 +189,12 @@ export default function Home() {
             <>
               <div className="eyebrow">PORTABLE PROOF</div><h1>Share & verify.</h1><p className="subtitle">Give employers a simple way to check your achievements.</p>
               <div className="feature-panel"><div className="feature-symbol">↗</div><h2>Share only what matters.</h2><p>Choose a credential, create a time-limited presentation, and send a verification link. The holder-controlled sharing flow is planned; this preview uses a sample link.</p><button className="primary-button" onClick={copyDemoLink}>Copy sample verification link</button></div>
-              <div className="feature-panel secondary"><div className="eyebrow">FOR VERIFIERS</div><h2>Check a credential</h2><p>In the production app, a verifier will check the issuer, document digest, expiry, and revocation status against the Gno registry.</p><button className="outline-button" onClick={() => setToast("Public verification page is coming in the next milestone")}>Open verification preview ↗</button></div>
+              <div className="feature-panel secondary"><div className="eyebrow">FOR VERIFIERS</div><h2>Check a credential</h2><p>In the production app, a verifier will check the issuer, document digest, expiry, and revocation status against the Gno registry.</p><a className="outline-button" href="/verify">Open verification preview ↗</a></div>
             </>
           ) : (
             <>
               <div className="eyebrow">TRUSTED SOURCES</div><h1>Issuers.</h1><p className="subtitle">Organisations authorised to issue credentials.</p>
-              <div className="feature-panel"><div className="feature-symbol">▧</div><h2>Issuer directory is coming soon.</h2><p>Approved universities, certification bodies, and training providers will be discoverable here. Issuer approval will be governed by the on-chain registry and an accountable review process.</p><button className="outline-button" onClick={() => setToast("Issuer onboarding will be available in a future release")}>Learn about issuer onboarding ↗</button></div>
+              <div className="feature-panel"><div className="feature-symbol">▧</div><h2>Issuer directory is coming soon.</h2><p>Approved universities, certification bodies, and training providers will be discoverable here. Issuer approval will be governed by the on-chain registry and an accountable review process.</p><a className="outline-button" href="/issuers">Open issuer registration preview ↗</a></div>
             </>
           )}
         </div>

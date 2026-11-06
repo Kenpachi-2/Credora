@@ -4,10 +4,18 @@ import "testing"
 
 // Test addresses are fixed, non-secret fixtures used only by the local Gno VM.
 const (
-	testAdminAddress   = "g1ecely4gjy0yl6s9kt409ll330q9hk2lj9ls3ec"
-	testIssuerAddress  = "g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5"
-	testOtherAddress   = "g1x8q4z3v8w0p0x6j0y8w6c8k2m4n6p8q0r2s4t"
-	testAttackerAddr   = "g1m8q2v6c0x4z8p2s6w0k4n8j2m6q0v4c8x2z6p"
+	testAdminAddress          = "g1ecely4gjy0yl6s9kt409ll330q9hk2lj9ls3ec"
+	testIssuerAddress          = "g1jg8mtutu9khhfwc4nxmuhcpftf0pajdhfvsqf5"
+	testEmptyNameIssuerAddress = "g1emptynameissuer"
+	testDuplicateIssuerAddress = "g1duplicateissuer"
+	testFirstIssuerAddress     = "g1firstissuer"
+	testSecondIssuerAddress    = "g1secondissuer"
+	testApprovalIssuerAddress  = "g1approvalissuer"
+	testUnauthorizedIssuer     = "g1unauthorizedissuer"
+	testDisableIssuerAddress   = "g1disableissuer"
+	testUnauthorizedDisable    = "g1unauthorizeddisable"
+	testUnknownIssuerAddress   = "g1unknownissuer"
+	testAttackerAddr            = "g1m8q2v6c0x4z8p2s6w0k4n8j2m6q0v4c8x2z6p"
 )
 
 func setTestCaller(caller address) {
@@ -15,8 +23,7 @@ func setTestCaller(caller address) {
 }
 
 func expectPanic(t *testing.T, fn func()) {
-	t.Helper()
-	defer func() {
+		defer func() {
 		if recover() == nil {
 			t.Fatal("expected call to panic")
 		}
@@ -46,7 +53,7 @@ func TestRequestIssuerCreatesInactiveRequest(t *testing.T) {
 }
 
 func TestRequestIssuerRejectsEmptyName(t *testing.T) {
-	issuerAddress := address(testOtherAddress)
+	issuerAddress := address(testEmptyNameIssuerAddress)
 	setTestCaller(issuerAddress)
 
 	expectPanic(t, func() {
@@ -59,7 +66,7 @@ func TestRequestIssuerRejectsEmptyName(t *testing.T) {
 }
 
 func TestRequestIssuerRejectsDuplicateRequest(t *testing.T) {
-	issuerAddress := address(testIssuerAddress)
+	issuerAddress := address(testDuplicateIssuerAddress)
 	setTestCaller(issuerAddress)
 	RequestIssuer(cross, "Original Institute")
 
@@ -77,8 +84,8 @@ func TestRequestIssuerRejectsDuplicateRequest(t *testing.T) {
 }
 
 func TestDifferentAddressesCanRequestIssuerStatus(t *testing.T) {
-	firstAddress := address(testIssuerAddress)
-	secondAddress := address(testOtherAddress)
+	firstAddress := address(testFirstIssuerAddress)
+	secondAddress := address(testSecondIssuerAddress)
 
 	setTestCaller(firstAddress)
 	RequestIssuer(cross, "First Institute")
@@ -96,7 +103,7 @@ func TestDifferentAddressesCanRequestIssuerStatus(t *testing.T) {
 
 func TestAdminCanApproveIssuer(t *testing.T) {
 	admin = address(testAdminAddress)
-	issuerAddress := address(testIssuerAddress)
+	issuerAddress := address(testApprovalIssuerAddress)
 
 	setTestCaller(issuerAddress)
 	RequestIssuer(cross, "Approval Test Institute")
@@ -115,7 +122,7 @@ func TestAdminCanApproveIssuer(t *testing.T) {
 
 func TestNonAdminCannotApproveIssuer(t *testing.T) {
 	admin = address(testAdminAddress)
-	issuerAddress := address(testIssuerAddress)
+	issuerAddress := address(testUnauthorizedIssuer)
 
 	setTestCaller(issuerAddress)
 	RequestIssuer(cross, "Unauthorized Approval Test")
@@ -135,13 +142,13 @@ func TestAdminCannotApproveUnknownIssuer(t *testing.T) {
 	setTestCaller(admin)
 
 	expectPanic(t, func() {
-		ApproveIssuer(cross, address(testOtherAddress))
+		ApproveIssuer(cross, address(testUnknownIssuerAddress))
 	})
 }
 
 func TestAdminCanDisableIssuer(t *testing.T) {
 	admin = address(testAdminAddress)
-	issuerAddress := address(testIssuerAddress)
+	issuerAddress := address(testDisableIssuerAddress)
 
 	setTestCaller(issuerAddress)
 	RequestIssuer(cross, "Disable Test Institute")
@@ -160,7 +167,7 @@ func TestAdminCanDisableIssuer(t *testing.T) {
 
 func TestNonAdminCannotDisableIssuer(t *testing.T) {
 	admin = address(testAdminAddress)
-	issuerAddress := address(testIssuerAddress)
+	issuerAddress := address(testUnauthorizedDisable)
 
 	setTestCaller(issuerAddress)
 	RequestIssuer(cross, "Unauthorized Disable Test")

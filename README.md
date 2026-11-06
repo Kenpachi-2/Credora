@@ -31,7 +31,7 @@ docs/                    Architecture, threat model, and roadmap
 | Credential issuance and revocation | Initial implementation |
 | Automated contract tests | Initial tests; expand before deployment |
 | Frontend UI | Initial dashboard, issuer, and verification previews |
-| Wallet connection and live Gno reads/writes | Not connected |
+| Adena wallet connection and Onyx chain guard | Implemented in issuer preview |\n| Read-only Onyx credential status query | Implemented; waiting for realm deployment |\n| Wallet-backed issuer registration / issuance writes | Not connected |
 | Encrypted document storage | Not started |
 | Independent security review | Not started |
 

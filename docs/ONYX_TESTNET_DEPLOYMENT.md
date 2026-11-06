@@ -1,6 +1,6 @@
 # Credora — Onyx testnet deployment plan
 
-**Status: prepared, not deployed.** This document is a deployment checklist. No transaction has been signed or broadcast.
+**Status: prepared, not deployed.** This document is a deployment checklist. No transaction has been signed or broadcast. The deployer wallet is confirmed by the maintainer as controlled by them, but no private key or signing capability has been shared.
 
 ## Target
 
@@ -41,6 +41,8 @@ Do not deploy from a different wallet. Address-based namespaces are controlled b
 - Check the balance before deployment.
 
 ## Simulation only — does not publish the realm
+
+The official Gno v1.7.0 CLI documents `-simulate only` as the dry-run mode. Its Onyx guide currently gives 5,000,000 gas wanted and 5,000 ugnot as example starting values; simulation results, not these examples, determine the final transaction parameters.
 
 Run from the package directory after installing the official Gno toolchain:
 

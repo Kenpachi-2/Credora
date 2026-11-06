@@ -18,6 +18,7 @@ Credora aims to make qualifications easier to manage, harder to forge, and simpl
 
 ```text
 contracts/credentials/   Gno credential registry realm and tests
+frontend/                Next.js + TypeScript UI prototype
 docs/                    Architecture, threat model, and roadmap
 ```
 
@@ -25,17 +26,18 @@ docs/                    Architecture, threat model, and roadmap
 
 | Area | Status |
 |---|---|
-| Gno realm skeleton | Initial implementation |
+| Gno realm skeleton | Initial implementation; not audited |
 | Issuer requests and admin approval | Initial implementation |
 | Credential issuance and revocation | Initial implementation |
 | Automated contract tests | Initial tests; expand before deployment |
-| Frontend / wallet connection | Not started |
+| Frontend UI | Initial dashboard, issuer, and verification previews |
+| Wallet connection and live Gno reads/writes | Not connected |
 | Encrypted document storage | Not started |
 | Independent security review | Not started |
 
 ## Frontend
 
-The Next.js + TypeScript UI prototype lives in `frontend/`. It currently uses clearly labelled sample data; wallet connection, live Gno reads/writes, encrypted storage, and real verification are not wired up yet.
+The Next.js + TypeScript UI prototype lives in `frontend/`. It uses clearly labelled sample data; wallet connection, live Gno reads/writes, encrypted storage, and real verification are not wired up yet.
 
 ```sh
 cd frontend
@@ -43,7 +45,7 @@ npm install
 npm run dev
 ```
 
-See [frontend/README.md](frontend/README.md) for configuration and limitations. The frontend follows the current [Next.js App Router installation guidance](https://nextjs.org/docs/app/getting-started/installation). <https://nextjs.org/docs/app/getting-started/installation>
+See [frontend/README.md](frontend/README.md) for configuration and limitations. The frontend follows the current [Next.js App Router installation guidance](https://nextjs.org/docs/app/getting-started/installation).
 
 ## Gno development
 
@@ -57,7 +59,13 @@ gno lint ./...
 gno test ./...
 ```
 
-The current `gnomod.toml` path, `gno.land/r/credora/credentials`, is a placeholder and must match the exact `-pkgpath` used by the on-chain `addpkg` deployment transaction. The simplest first deployment is usually an address-based path such as `gno.land/r/<your-g1-address>/credentials`: every account has its own address namespace, and only that account can deploy under it. A human-readable namespace such as `gno.land/r/credora/...` must be registered on-chain first. Your GitHub username or repository name does not automatically reserve a Gno namespace. See the [official Gno getting-started guide](https://docs.gno.land/builders/getting-started/) and [gnomod.toml reference](https://docs.gno.land/resources/configuring-gno-projects/).
+The realm is configured for the address-based path:
+
+```text
+gno.land/r/g1vfxnumezmdrtf3l2rncqe7p2ag2cksfcfjc4m0/credentials
+```
+
+This uses the public Gno address supplied by the project owner. Gno grants each account an address-based namespace, and only that account can deploy under it. The final path segment, `credentials`, matches the source package declaration `package credentials`. The path in `gnomod.toml` must exactly match the `-pkgpath` passed to the deployment transaction. This is an intended path, not a deployed realm yet. See the [official Gno getting-started guide](https://docs.gno.land/builders/getting-started/) and [package configuration reference](https://docs.gno.land/resources/configuring-gno-projects/).
 
 ## Network
 

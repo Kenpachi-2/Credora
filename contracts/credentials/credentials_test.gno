@@ -11,8 +11,9 @@ func testAddress(label string) address {
 }
 
 func setTestCaller(caller address) {
+	// SetRealm simulates the user transaction for cross-realm calls.
+	// It already sets the caller frame, so do not also call SetOriginCaller.
 	testing.SetRealm(testing.NewUserRealm(caller))
-	testing.SetOriginCaller(caller)
 }
 
 func expectPanic(t *testing.T, fn func()) {

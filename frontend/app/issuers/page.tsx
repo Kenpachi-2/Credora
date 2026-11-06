@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AdenaSDK, AdenaWalletProvider } from "@adena-wallet/sdk";
+import { AdenaSDK } from "@adena-wallet/sdk";
 
 type WalletAccount = { address?: string; account?: { address?: string }; data?: { address?: string }; [key: string]: unknown };
 type WalletNetwork = { chainId?: string; chain_id?: string; chainName?: string; name?: string; data?: { chainId?: string; chain_id?: string; chainName?: string; name?: string }; [key: string]: unknown };
@@ -23,7 +23,7 @@ export default function IssuersPage() {
     setConnecting(true);
     setWalletError("");
     try {
-      const adena = new AdenaSDK(new AdenaWalletProvider());
+      const adena = AdenaSDK.createAdenaWallet();
       await adena.connectWallet();
       const [account, currentNetwork] = await Promise.all([
         adena.getAccount() as unknown as Promise<WalletAccount>,

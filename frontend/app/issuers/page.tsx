@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AdenaSDK } from "@adena-wallet/sdk";
+import { GNO_NETWORK } from "@/lib/config";
 
 type WalletAccount = { address?: string; account?: { address?: string }; data?: { address?: string }; [key: string]: unknown };
 type WalletNetwork = { chainId?: string; chain_id?: string; chainName?: string; name?: string; data?: { chainId?: string; chain_id?: string; chainName?: string; name?: string }; [key: string]: unknown };
@@ -34,7 +35,11 @@ export default function IssuersPage() {
       if (!address) throw new Error("Adena connected, but no account address was returned. Please unlock Adena and try again.");
       setWallet(address);
       const networkInfo = currentNetwork.data ?? currentNetwork;
-      setNetwork(networkInfo.chainId ?? networkInfo.chain_id ?? networkInfo.chainName ?? networkInfo.name ?? "Connected network");
+      const chainId = networkInfo.chainId ?? networkInfo.chain_id ?? "";
+      setNetwork(chainId || networkInfo.chainName || networkInfo.name || "Unknown network");
+      if (chainId !== GNO_NETWORK.chainId) {
+        throw new Error(`Wrong network. Switch Adena to ${GNO_NETWORK.name} (${GNO_NETWORK.chainId}) and reconnect.`);
+      }
       setConnected(true);
       setSubmitted(false);
     } catch (error) {

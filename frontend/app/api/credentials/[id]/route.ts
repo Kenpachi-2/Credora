@@ -1,4 +1,5 @@
 import { GNO_NETWORK } from "@/lib/config";
+import { parseCredentialValidityResult } from "@/lib/credential-query";
 
 export const dynamic = "force-dynamic";
 
@@ -66,12 +67,11 @@ export async function GET(
       return Response.json({ error: "The registry returned no credential result." }, { status: 502 });
     }
 
-    const decoded = JSON.parse(Buffer.from(responseBase.Data, "base64").toString("utf8")) as {
-      results?: Array<{ V?: { value?: unknown } }>;
-    };
-    const valid = decoded.results?.[0]?.V?.value;
-
-    if (typeof valid !== "boolean") {
+    const decoded: unknown = JSON.parse(Buffer.from(responseBase.Data, "base64").toString("utf8"));
+    let valid: boolean;
+    try {
+      valid = parseCredentialValidityResult(decoded);
+    } catch {
       return Response.json({ error: "The registry returned an unrecognised credential result." }, { status: 502 });
     }
 

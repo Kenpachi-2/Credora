@@ -87,9 +87,18 @@ Add and run Gno tests against the pinned toolchain before deployment:
 | Unapproved issuer issues credential | Rejected |
 | Approved issuer issues credential | Accepted |
 
-Use isolated realm state for each test so that global maps and the
-initialization-time administrator do not leak between cases. Include a fresh
-deployment/init test to verify the administrator capture behavior.
+Implemented in `credentials_test.gno`: request creation and inactive default,
+empty-name rejection, duplicate rejection without overwriting the original
+record, independent requests by two callers, admin approval, non-admin
+approval rejection, unknown-issuer rejection, admin disable, and non-admin
+disable rejection. The tests use distinct caller fixtures so shared package
+state cannot make the cases order-dependent.
+
+The admin-role tests assign the package-level `admin` fixture directly. They
+exercise the authorization guard, but **do not prove that realm initialization
+captures the actual package deployer**. That remains a separate filetest or
+fresh-realm integration-test requirement. Whitespace-only issuer names are
+also currently accepted by the contract and remain an explicit validation gap.
 
 ## Deployment gate
 

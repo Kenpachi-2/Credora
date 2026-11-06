@@ -1,6 +1,9 @@
 package credentials
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // admin is captured from the deployer during one-time realm initialisation.
 var admin address
@@ -52,7 +55,7 @@ func requireAdmin(cur realm) {
 func RequestIssuer(cur realm, name string) {
 	requireCurrent(cur)
 	caller := cur.Previous().Address()
-	if name == "" {
+	if strings.TrimSpace(name) == "" {
 		panic("issuer name is required")
 	}
 	if issuers[caller] != nil {
@@ -91,7 +94,7 @@ func IssueCredential(cur realm, id string, holder address, documentHash string, 
 	if issuer == nil || !issuer.Active {
 		panic("caller is not an approved issuer")
 	}
-	if id == "" {
+	if strings.TrimSpace(id) == "" {
 		panic("credential ID is required")
 	}
 	if holder == address("") {

@@ -23,6 +23,7 @@ export default function IssuersPage() {
 
   async function connectWallet() {
     setConnecting(true);
+    setConnected(false);
     setWalletError("");
     try {
       const adena = AdenaSDK.createAdenaWallet();

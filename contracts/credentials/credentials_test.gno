@@ -255,3 +255,74 @@ func TestIssueCredentialRejectsPastExpiry(cur realm, t *testing.T) {
 		IssueCredential(cross(cur), "CRED-PAST-EXPIRY", testAddress("holder-expired"), "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", 1)
 	})
 }
+
+func TestRequestIssuerRejectsWhitespaceOnlyName(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-blank-name")
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+
+	expectPanic(t, func() {
+		RequestIssuer(cross(cur), "   \t\n")
+	})
+	if issuers[issuerAddress] != nil {
+		t.Fatal("blank issuer name must not create a request")
+	}
+}
+
+func TestIssueCredentialRejectsWhitespaceOnlyID(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-blank-id")
+	admin = testAddress("admin-blank-id")
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RequestIssuer(cross(cur), "Blank ID Institute")
+	testing.SetRealm(testing.NewUserRealm(admin))
+	ApproveIssuer(cross(cur), issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+
+	expectPanic(t, func() {
+		IssueCredential(cross(cur), "   ", testAddress("holder-blank-id"), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0)
+	})
+}
+
+func TestIssueCredentialRejectsDuplicateID(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-dup-id")
+	admin = testAddress("admin-dup-id")
+	holderAddress := testAddress("holder-dup-id")
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RequestIssuer(cross(cur), "Duplicate ID Institute")
+	testing.SetRealm(testing.NewUserRealm(admin))
+	ApproveIssuer(cross(cur), issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	IssueCredential(cross(cur), "CRED-DUPLICATE", holderAddress, "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0)
+
+	expectPanic(t, func() {
+		IssueCredential(cross(cur), "CRED-DUPLICATE", holderAddress, "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", 0)
+	})
+	if GetCredential("CRED-DUPLICATE").DocumentHash != "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" {
+		t.Fatal("duplicate credential ID must not overwrite the original record")
+	}
+}
+
+func TestDisabledIssuerCannotIssueCredential(cur realm, t *testing.T) {
+	issuerAddress := testAddress("issuer-disabled")
+	admin = testAddress("admin-disabled")
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+	RequestIssuer(cross(cur), "Disabled Institute")
+	testing.SetRealm(testing.NewUserRealm(admin))
+	ApproveIssuer(cross(cur), issuerAddress)
+	DisableIssuer(cross(cur), issuerAddress)
+	testing.SetRealm(testing.NewUserRealm(issuerAddress))
+
+	expectPanic(t, func() {
+		IssueCredential(cross(cur), "CRED-DISABLED", testAddress("holder-disabled"), "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", 0)
+	})
+}
+
+func TestExpiredCredentialIsNotValid(cur realm, t *testing.T) {
+	_ = cur
+	credentials["CRED-EXPIRED-STATUS"] = &Credential{
+		ID: "CRED-EXPIRED-STATUS",
+		ExpiresAt: 1,
+	}
+	if IsCredentialValid("CRED-EXPIRED-STATUS") {
+		t.Fatal("expired credential must not be considered valid")
+	}
+}

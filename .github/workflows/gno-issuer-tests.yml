@@ -44,6 +44,18 @@ jobs:
         env:
           GNOROOT: ${{ github.workspace }}/.gno-src
 
+      - name: Check Gno formatting
+        working-directory: contracts/credentials
+        run: gno fmt -diff credentials_test.gno
+        env:
+          GNOROOT: ${{ github.workspace }}/.gno-src
+
+      - name: Run Gno lint
+        working-directory: contracts/credentials
+        run: gno lint .
+        env:
+          GNOROOT: ${{ github.workspace }}/.gno-src
+
       - name: Run credentials realm tests
         working-directory: contracts/credentials
         run: gno test .
